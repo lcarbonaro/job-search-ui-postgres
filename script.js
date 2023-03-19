@@ -4,6 +4,26 @@
     let btn = document.querySelector('#btnAddJob');
     let ul = document.querySelector('#ulJobList');
 
+    let divAddJob = document.querySelector('#divAddJob');
+    let divEditJob = document.querySelector('#divEditJob');
+
+    let btnAddJobs = document.querySelector('#btnAddJobs');
+    btnAddJobs.addEventListener('click', () => {
+        divAddJob.className = 'show';
+        divEditJob.className = 'hide';
+    });
+
+    let btnSaveEdits = document.querySelector('#btnSaveEdits');
+    btnSaveEdits.addEventListener('click', async () => {
+        await saveEdits();
+    });
+
+    let btnCancelEdits = document.querySelector('#btnCancelEdits');
+    btnCancelEdits.addEventListener('click', async () => {
+        divAddJob.className = 'hide';
+        divEditJob.className = 'hide';        
+    });
+
     btn.addEventListener('click', addJob);
 
     await getJobList();
@@ -20,14 +40,14 @@
 
             let btnEdit = document.createElement('button');
             btnEdit.textContent = "Edit";
-            btnEdit.addEventListener('click', () => {
-                editJob(id);
+            btnEdit.addEventListener('click', async () => {
+                await editJob(id);
             });
 
             let btnDel = document.createElement('button');
             btnDel.textContent = "Del";
-            btnDel.addEventListener('click', () => {
-                deleteJob(id);
+            btnDel.addEventListener('click', async () => {
+                await deleteJob(id);
             });
 
             li.innerHTML = `${id} - ${jobtitle} (${company})`;
@@ -40,13 +60,57 @@
     }  // async function getJobList
 
 
-    function editJob(jobId) {
-        console.log(`so you want to edit job id ${jobId}`);
+    async function editJob(jobId) {
+        //console.log(`so you want to edit job id ${jobId}`);
+        divEditJob.className = 'show';
+        divAddJob.className = 'hide';
 
+        // fetch the record
+        let resp = await fetch(`http://localhost:3000/jobs/${jobId}`,{
+            method: 'GET' 
+        });
+        let {result:jobsArray} = await resp.json();
+
+        // populate the form
+        document.querySelector('input[name="editJobId"]').value = jobsArray[0].id;
+        document.querySelector('input[name="editJobTitle"]').value = jobsArray[0].jobtitle;
+        document.querySelector('input[name="editCompany"]').value = jobsArray[0].company;
+        document.querySelector('input[name="editJobCategory"]').value = jobsArray[0].jobcategory;
+        document.querySelector('input[name="editRegion"]').value = jobsArray[0].region;
     }
 
-    function deleteJob(jobId) {
-        console.log(`so you want to delete job id ${jobId}`);
+    async function deleteJob(jobId) {
+        //console.log(`so you want to delete job id ${jobId}`);
+        await fetch(`http://localhost:3000/jobs/${jobId}`,{
+            method: 'DELETE'                                  
+        });
+
+    }
+    
+    async function saveEdits() {
+        let id = document.querySelector('input[name="editJobId"]').value;
+        let jobTitle = document.querySelector('input[name="editJobTitle"]').value;
+        let company = document.querySelector('input[name="editCompany"]').value;
+        let jobCategory = document.querySelector('input[name="editJobCategory"]').value;
+        let region = document.querySelector('input[name="editRegion"]').value;
+
+        let saveObj = {
+            id : parseInt(id,10),
+            jobTitle,
+            jobCategory,
+            company,
+            region  
+        }
+
+        //console.log(`so you want to save edits for job id ${id}`);
+
+        await fetch(`http://localhost:3000/jobs/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(saveObj) // body data type must match "Content-Type" header
+        });
 
     }
 

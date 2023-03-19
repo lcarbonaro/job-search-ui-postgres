@@ -15,11 +15,13 @@
         <ul id="ulJobList"></ul>
     </div>
 
+    <button id="btnAddJobs">Add Jobs</button>
+
     <hr/>
 
-    <div>
+    <div id="divAddJob" class="hide">
         <div>
-            <label for="jobTitle">Job Title</label>
+            <label for="jobTitle">ADD Job Title</label>
             <input type="text" name="jobTitle" />
         </div>
         <div>
@@ -39,6 +41,33 @@
             <button id="btnAddJob">Add New Job</button>
         </div>
     </div>
+
+
+    <div id="divEditJob" class="hide">
+        <input type="hidden" value="" name="editJobId" />
+        <div>
+            <label for="jobTitle">EDIT Job Title</label>
+            <input type="text" name="editJobTitle" />
+        </div>
+        <div>
+            <label for="company">Company</label>
+            <input type="text" name="editCompany" />
+        </div>
+
+        <div> <label for="region">Region</label>
+            <input type="text" name="editRegion" />
+        </div>
+
+        <div>
+            <label for="jobCategory">Job Category</label>
+            <input type="text" name="editJobCategory" />
+        </div>
+        <div>
+            <button id="btnSaveEdits">Save Edits</button>
+            <button id="btnCancelEdits">Cancel</button>
+        </div>
+    </div>
+
 
     <script src="script.js"></script>
 </body>
