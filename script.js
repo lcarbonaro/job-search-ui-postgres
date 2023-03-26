@@ -1,7 +1,7 @@
 // IIFE - immediately invoked function expression
 (async () => {
 
-    let btn = document.querySelector('#btnAddJob');
+    let btnAddNewJob = document.querySelector('#btnAddJob');
     let ul = document.querySelector('#ulJobList');
 
     let divAddJob = document.querySelector('#divAddJob');
@@ -10,12 +10,16 @@
     let btnAddJobs = document.querySelector('#btnAddJobs');
     btnAddJobs.addEventListener('click', () => {
         divAddJob.className = 'show';
+        //TODO - clear the fields!!!
         divEditJob.className = 'hide';
     });
 
     let btnSaveEdits = document.querySelector('#btnSaveEdits');
     btnSaveEdits.addEventListener('click', async () => {
         await saveEdits();
+        await getJobList();
+        divAddJob.className = 'hide';
+        divEditJob.className = 'hide'; 
     });
 
     let btnCancelEdits = document.querySelector('#btnCancelEdits');
@@ -24,11 +28,17 @@
         divEditJob.className = 'hide';        
     });
 
-    btn.addEventListener('click', addJob);
+    btnAddNewJob.addEventListener('click', async () => {
+        await addJob();
+        await getJobList();
+        divAddJob.className = 'hide';
+        divEditJob.className = 'hide';        
+    });
 
     await getJobList();
 
     async function getJobList() {
+        ul.innerHTML = "";
         let resp = await fetch('http://localhost:3000/jobs');
         let {result:data} = await resp.json();
         console.table(data);
@@ -48,6 +58,7 @@
             btnDel.textContent = "Del";
             btnDel.addEventListener('click', async () => {
                 await deleteJob(id);
+                await getJobList();                
             });
 
             li.innerHTML = `${id} - ${jobtitle} (${company})`;
