@@ -17,7 +17,10 @@
     let btnSaveEdits = document.querySelector('#btnSaveEdits');
     btnSaveEdits.addEventListener('click', async () => {
         await saveEdits();
-        await getJobList();
+
+        // do not need to hit the b/e again; just update the f/e
+        //await getJobList();
+
         divAddJob.className = 'hide';
         divEditJob.className = 'hide'; 
     });
@@ -48,17 +51,24 @@
             let li = document.createElement('li');
             //li.textContent = `${jobtitle} (${company})`;
 
+            // add element id using the job record id
+            li.id = `job-id-${id}`;
+
             let btnEdit = document.createElement('button');
+            btnEdit.id = `edit-job-id-${id}`;
             btnEdit.textContent = "Edit";
             btnEdit.addEventListener('click', async () => {
                 await editJob(id);
             });
 
             let btnDel = document.createElement('button');
+            btnDel.id = `del-job-id-${id}`;
             btnDel.textContent = "Del";
             btnDel.addEventListener('click', async () => {
                 await deleteJob(id);
-                await getJobList();                
+
+                // no need to fetch list again as we are removing the LI in the f/e            
+                //await getJobList();    
             });
 
             li.innerHTML = `${id} - ${jobtitle} (${company})`;
@@ -96,6 +106,11 @@
             method: 'DELETE'                                  
         });
 
+        // get a reference to the li for the deleted job
+        // remove that li from the ul
+        let delLI = document.querySelector(`li#job-id-${jobId}`);
+        delLI.remove();
+
     }
     
     async function saveEdits() {
@@ -123,6 +138,13 @@
             body: JSON.stringify(saveObj) // body data type must match "Content-Type" header
         });
 
+        // update f/e directly
+        let editLI = document.querySelector(`li#job-id-${id}`);
+        let btnEdit = editLI.querySelector(`button#edit-job-id-${id}`);
+        let btnDel  = editLI.querySelector(`button#del-job-id-${id}`);
+        editLI.innerHTML = `${id} - ${jobTitle} (${company})`;
+        editLI.append(btnEdit);
+        editLI.append(btnDel);
     }
 
 
