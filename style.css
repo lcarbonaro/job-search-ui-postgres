@@ -7,3 +7,12 @@
     display: none;
     visibility:hidden;
 }
+
+table th, table td {
+    border: 1px solid black;
+}
+
+.error {
+    color: red;
+    
+}

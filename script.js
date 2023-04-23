@@ -6,13 +6,35 @@
 
     let divAddJob = document.querySelector('#divAddJob');
     let divEditJob = document.querySelector('#divEditJob');
+    let divSearchJob = document.querySelector('#divSearchJob');
+
+    let selSearchFld = document.querySelector('#selSearchField');
+    let errMsg = document.querySelector('#errMsg');
 
     let btnAddJobs = document.querySelector('#btnAddJobs');
     btnAddJobs.addEventListener('click', () => {
         divAddJob.className = 'show';
         //TODO - clear the fields!!!
         divEditJob.className = 'hide';
+        divSearchJob.className = 'hide';
     });
+
+    let btnSearchJobs = document.querySelector('#btnSearchJobs');
+    btnSearchJobs.addEventListener('click', () => {
+        divAddJob.className = 'hide';
+        //TODO - clear the fields!!!
+        divEditJob.className = 'hide';
+        divSearchJob.className = 'show';
+
+        // clearing the search input
+        // and hiding the search results table
+        document.querySelector('input[name="jobSearchCriteria"]').value = '';
+        document.querySelector('#searchResultTbl').className='hide';       
+        document.querySelector('#searchResultTbl>tbody').innerHTML = '';     
+
+    });
+
+    let btnSearchJob = document.querySelector('#btnSearchJob');
 
     let btnSaveEdits = document.querySelector('#btnSaveEdits');
     btnSaveEdits.addEventListener('click', async () => {
@@ -38,7 +60,72 @@
         divEditJob.className = 'hide';        
     });
 
+    btnSearchJob.addEventListener('click', async () => {        
+        await getJobSearchResults();        
+    });
+    
     await getJobList();
+
+    async function getJobSearchResults() {
+        let searchStr = document.querySelector('input[name="jobSearchCriteria"]').value;
+
+        let searchFld = selSearchFld.value;
+        let searchUrl;        
+        if( searchFld === 'all') {
+            searchUrl = `http://localhost:3000/jobSearch/${searchStr}`;
+        } else {
+            searchUrl = `http://localhost:3000/jobSearchByField?criteria=${searchStr}&field=${searchFld}`;
+        }
+
+        let resp = await fetch(searchUrl);
+        let {result:data} = await resp.json();
+
+        console.log(data);
+
+        let tbl = document.querySelector('#searchResultTbl');        
+        let tblBody = tbl.querySelector('tbody');
+        tblBody.innerHTML = '';    
+
+        if(data.length>0) {
+            errMsg.textContent = '';   
+            tbl.className = 'show';
+        } else {
+            errMsg.textContent = 'No match found';   
+            tbl.className = 'hide';
+        }       
+
+        let tr,td;
+
+        for (let i=0; i < data.length; i++) {
+            let { id, jobtitle, company, region, jobcategory } = data[i];
+
+            tr = document.createElement('tr');
+
+            td = document.createElement('td');
+            td.textContent = id;           
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.textContent = jobtitle;           
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.textContent = company;           
+            tr.appendChild(td);
+
+            td = document.createElement('td');
+            td.textContent = jobcategory;           
+            tr.appendChild(td);
+            
+            td = document.createElement('td');
+            td.textContent = region;           
+            tr.appendChild(td);
+            
+            tblBody.appendChild(tr);
+
+        } // for-loop
+
+    }
 
     async function getJobList() {
         ul.innerHTML = "";
@@ -85,6 +172,7 @@
         //console.log(`so you want to edit job id ${jobId}`);
         divEditJob.className = 'show';
         divAddJob.className = 'hide';
+        divSearchJob.className = 'hide';
 
         // fetch the record
         let resp = await fetch(`http://localhost:3000/jobs/${jobId}`,{

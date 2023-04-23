@@ -16,8 +16,46 @@
     </div>
 
     <button id="btnAddJobs">Add Jobs</button>
+    <button id="btnSearchJobs">Search Jobs</button>
 
     <hr/>
+
+
+    <div id="divSearchJob" class="hide">
+        <div>
+            <label for="jobSearchCriteria">Search For:
+                <input type="text" name="jobSearchCriteria" />
+            </label>
+            <label for="jobSearchField">Search In:
+                <select  name="selSearchField" id="selSearchField" >
+                    <option value="all">All Fields</option>
+                    <option value="jobtitle">Job Title</option>
+                    <option value="jobcategory">Job Category</option>
+                    <option value="region">Region</option>
+                    <option value="company">Company</option>
+                </select>
+            </label>
+        </div>
+        <div>
+            <button id="btnSearchJob">Search</button>
+            <p class="error" id="errMsg"></p>
+        </div>
+        <table id="searchResultTbl" class="hide">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Category</th>
+                    <th>Region</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- table rows will be generated dynamically -->
+            </tbody>
+        </table>
+        
+    </div>
 
     <div id="divAddJob" class="hide">
         <div>
